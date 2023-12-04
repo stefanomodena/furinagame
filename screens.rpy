@@ -559,7 +559,7 @@ screen about():
             if gui.about:
                 text "[gui.about!t]\n"
 
-            text _("Made with {a=https://www.renpy.org/}Ren'Py{/a} [renpy.version_only].\n\n[renpy.license!t]")
+            text _("Please support us on: {a=https://ko-fi.com/luminarainteractive}Ko-fi{/a}")
 
 
 style about_label is gui_label
@@ -1522,7 +1522,6 @@ screen day_money_counter:
         text _("Day: [today]")
         text _("Money: $[money_total]")
         text _("Happiness: [current_happiness]")
-        text _("Reputation: [reputation_total]")
         text _("Stamina: [current_stamina]")
         text _("Corruption: [current_corruption]")
         text _("Lust: [current_lust]")
