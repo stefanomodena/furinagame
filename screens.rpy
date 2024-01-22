@@ -1524,4 +1524,4 @@ screen day_money_counter:
         text _("Happiness: [current_happiness]")
         text _("Stamina: [current_stamina]")
         text _("Corruption: [current_corruption]")
-        text _("Lust: [current_lust]")
+

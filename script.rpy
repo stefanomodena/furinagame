@@ -43,6 +43,8 @@
 
     junkie = 0
 
+    eviction = 3
+
     # # FUNCTIONS ******************************************************************************************************
 
     def jobPay(min, max):
@@ -53,17 +55,21 @@
 
     furinaApronSprites = ['furinaapron1.png']
 
-    furinaPhotoSprites = ['furinaphoto.jpg','furinaphoto1.jpg','furinaphoto2.jpg','furinaphoto3.jpg']
+    furinaNakedApronSprites = ['furinanakedapron1.png','furinanakedapron2.png']
 
-    furinaBikiniSprites = ['furinabikini1.jpg','furinabikini2.jpg','furinabikini3.jpg']
+    furinaPhotoSprites = ['furinaphotoshoot1.png','furinaphotoshoot2.png','furinaphotoshoot3.png','furinaphotoshoot4.png']
 
-    furinaNakedSprites = ['furinanaked.jpg','furinanaked2.jpg']
+    furinaBikiniSprites = ['furinabikini1.png','furinabikini2.png','furinabikini3.png','furinabikini4.png','furinabikini5.png','furinabikini6.png','furinabikini7.png']
+
+    furinaNakedSprites = ['furinanaked.png','furinanaked2.png','furinanaked3.png','furinanaked4.png','furinanaked5.png','furinanaked6.png','furinanaked7.png']
 
     furinaPornSprites = ['furinaporn1.jpg','furinaporn2.jpg','furinaporn3.jpg','furinaporn4.jpg']
 
-    furinaFetishSprites = ['furinafetish1.jpg', 'furinafetish2.jpg']
+    furinaFetishSprites = ['furinafetish1.png','furinafetish2.png','furinafetish3.png','furinafetish4.png','furinafetish5.png','furinafetish6.png']
 
-    furinaEscortSprites = ['furinaescort.jpg']
+    furinaAdventureSprites = ['furinaadventure1.png', 'furinaadventure2.png','furinaadventure3.png','furinaadventure4.png','furinaadventure5.png','furinaadventure6.png','furinaadventure7.png']
+
+    furinaEscortSprites = ['furinaescort1.png','furinaescort2.png']
 
     furinaBarSprites = ['furinabar1.png','furinabar2.png','furinabar3.png']
 
@@ -116,6 +122,7 @@ label intro:
 
     "You must tend to Furina needs."
     "Make sure she has money and it's still happy."
+    "You must pay for her rent everyday! The rent costs: $[rentValue]"
     "Also looing out for her corruption and not letting it consume Furina!"
 
     jump map
@@ -150,15 +157,11 @@ label map:
             jump mall
         "Pharmacy":
             jump pharmacy
-        "Teste":
-            jump test
+        "Adventure":
+            jump adventure
 
         "Rest":
             jump endday
-
-label test:
-    $ renpy.movie_cutscene("street.webm")
-    jump map
 
 
 label endday:
@@ -167,6 +170,19 @@ label endday:
 
 
     f "It was a very long day, even a goddess like me needs to rest!"
+
+    if money >= rentValue:
+        f "I payed my rent, it costs $[rentValue]"
+        $ eviction = 0
+    elif money < rentValue:
+        f "I didn't had enough money to pay my rent!"
+        f "If I don't pay rent for 3 days straight I will be evicted! I still have [eviction] days before that!"
+        $ eviction -= 1
+
+    if eviction == 0:
+        jump evictedEnding
+
+    
 
     $ stamina = stamina_max
     $ current_day += 1
@@ -240,6 +256,7 @@ label endday:
         $ happiness -= 10
 
     $ honesty -= 2
+
 
     jump map
 
@@ -368,6 +385,8 @@ label cafe:
                 f "I'm too tired for this!"
                 jump cafe
             else:
+                $ furinaNakedApron = renpy.random.choice(furinaNakedApronSprites)
+                show expression furinaNakedApron
                 $ tipsMultiplier = 2
                 $ salary = jobPay(20, 40)
                 $ money += salary
@@ -455,27 +474,27 @@ label studio:
 
         "Work costs [staminaWork] stamina."
 
-        "Advertsiment Photoshoot":
+        "Advertsiment Photoshoot (-2 stamina)":
             if stamina < staminaWork:
                 f "I'm too tired for this!"
                 jump studio
             $ furinaPhoto = renpy.random.choice(furinaPhotoSprites)
             show expression furinaPhoto
-            $ salary = jobPay(5, 20)
+            $ salary = jobPay(5, 10)
             $ money += salary
             $ stamina -= staminaWork
             "Furina worked honestly and made $[salary]"
             hide expression furinaPhoto
             jump studio
         
-        "Bikini photoshoot (More tips, increases corruption)":
+        "Bikini photoshoot (More tips, increases corruption, -2 stamina)":
             if stamina < staminaWork:
                 f "I'm too tired for this!"
                 jump studio
             $ furinaBikiniPhoto = renpy.random.choice(furinaBikiniSprites)
             show expression furinaBikiniPhoto
             $ tipsMultiplier = 2
-            $ salary = jobPay(10, 30)
+            $ salary = jobPay(10, 25)
             $ money += salary
             $ stamina -= staminaWork
             $ corruption += 1
@@ -491,7 +510,7 @@ label studio:
             $ furinaNakedPhoto = renpy.random.choice(furinaNakedSprites)
             show expression furinaNakedPhoto
             $ tipsMultiplier = 3
-            $ salary = jobPay(35, 50)
+            $ salary = jobPay(30, 40)
             $ money += salary
             $ stamina -= 3
             $ corruption += 2
@@ -517,7 +536,7 @@ label studio:
             "Furina makes a porn movie and made $[salary]"
             jump studio
 
-        "Fetish porn movie (Best money, worst corruption), -5 stamina" if corruption >= 70:
+        "Fetish porn movie (Best money, worst corruption), -10 stamina" if corruption >= 70:
             if stamina < 10:
                 f "I'm too tired for this!"
                 jump studio
@@ -606,7 +625,7 @@ label hotel:
 
     menu:
 
-        "Escort service":
+        "Escort service (-5 stamina)":
             if corruption < 50:
                 f "No! I'm not THAT corrupted yet!"
                 jump hotel
@@ -643,6 +662,56 @@ label hotel:
             $ honesty -= 20
             "Furina spends some time with a customer and receives $[salary]."
             jump hotel
+
+        "Go home":
+            jump map
+
+
+    jump map
+
+
+label adventure:
+
+    scene adventure
+
+    f "It's time for some adventure."
+
+    menu:
+
+        "Adventure (-5 stamina)":
+            if stamina < 5:
+                f "I'm too tired for this!"
+                jump adventure
+            $ randomEvent = random.randint(0, 10)
+            if randomEvent == 2:
+                "Furina fould a treasure chest. ($50)"
+                $ money += 50
+            elif randomEvent == 4:
+                "Furina met some friendly travelers along the way (+35 happiness)"
+                $ happiness += 35
+            elif randomEvent == 6:
+                "Furina found a mysterious artifact that healed her (-20 corruption)"
+                $ corruption += 20
+            elif randomEvent == 8:
+                $ customerTheft = money / 10
+                $ money -= customerTheft
+                "Furina was attacked by some Treasure Hoarders! She lost $[customerTheft]"
+            elif randomEvent == 10:
+                "Furina found some ruins and got lost inside, it took her all day to get out."
+                $ stamina = 0
+                jump adventure
+
+            $ furinaAdventurePhoto = renpy.random.choice(furinaAdventureSprites)
+            show expression furinaAdventurePhoto
+            $ tipsMultiplier = 1
+            $ salary = jobPay(100, 150)
+            $ money += salary
+            $ stamina -= 5
+            $ corruption -= 20
+            $ happiness += 30
+            $ honesty += 20
+            "Furina completes some quests and earns $[salary]."
+            jump adventure
 
         "Go home":
             jump map
@@ -733,30 +802,7 @@ label pharmacy:
 
     menu:
 
-        "Happiness drug. ($50)":
-            if money < 50:
-                f "I don't have enough money!"
-                jump pharmacy
-            else:
-                $ money -= 50
-                $ happiness += 5
-                $ junkie += 10
-                f "I feel lighter already!"
-                jump pharmacy
-
-
-        "Corruption drug ($70)":
-            if money < 70:
-                f "I don't have enough money!"
-                jump pharmacy
-            else:
-                $ money -= 70
-                $ corruption -= 5
-                $ junkie += 10
-                f "I feel like myself again!"
-                jump pharmacy
-
-        "Stamina drug ($100)":
+        "Stamina drug ($150)":
             if money < 100:
                 f "I don't have enough money!"
                 jump pharmacy
@@ -767,7 +813,7 @@ label pharmacy:
                 f "I've never felt so productive!"
                 jump pharmacy
                  
-        "Stronger happiness drug ($130)":
+        "Happiness drug ($130)":
             if money < 130:
                 f "I don't have enough money!"
                 jump pharmacy
@@ -778,7 +824,7 @@ label pharmacy:
                 f "I feel so happy right now!"
                 jump pharmacy
 
-        "Stronger corruption drug ($150)":
+        "Corruption drug ($150)":
             if money < 150:
                 f "I don't have enough money!"
                 jump pharmacy
@@ -807,6 +853,9 @@ label pharmacy:
 
 
 label corruptionending:
+
+    scene junkieending
+
     "Furina corruption led her through a dark path."
     "She got involved with bad people and sold her body for less and less"
     "She did unspeakable things just for the thrill of it."
@@ -815,6 +864,9 @@ label corruptionending:
 
 
 label happyending:
+
+    scene happyending
+
     "Furina finally found happiness with her new life."
     "She realized she didn't needed to be an archon to pursue happiness."
     "She eventually met and made amends with her former friends."
@@ -827,6 +879,9 @@ label pornending:
     jump gameover
 
 label honestyending:
+
+    scene happyending
+
     "After spending more time working and interacting with regular folk"
     "Furina begins to feel more and more fullfilled with the idea of honest work"
     "She's happy even if she isn't an archon anymore. Her former friends are happy by how she turned her life around."
@@ -834,11 +889,20 @@ label honestyending:
 
 label junkieending:
 
-    scene sadending
+    scene junkieending
 
     "Furina becomes too addicted to drugs."
     "She needs drugs to sleep, drugs to wake up. She only feels things when she's using them."
     "Her life was destroyed by the drugs and last time she was seem she was selling herself for drug money."
+    jump gameover
+
+label evictedEnding:
+
+    scene junkieending
+
+    "Furina didn't had money to pay her rent."
+    "She was evicted and now roams the streets of Fontaine."
+    "Her life was ruined and now she struggles to get back on her feet."
     jump gameover
 
 label sadending:
